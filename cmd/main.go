@@ -1,10 +1,9 @@
 package main
 
 import (
-	"net/http"
+	"challenge/internal/http"
 )
 
 func main() {
-	http.HandleFunc("/analysis", analysisHandler)
-	http.ListenAndServe(":8080", nil)
+	http.AnalysisServer()
 }

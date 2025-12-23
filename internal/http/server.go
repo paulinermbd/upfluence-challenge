@@ -1,11 +1,14 @@
-package internal
+package http
 
-import "net/http"
+import (
+	"challenge/external"
+	"net/http"
+)
 
 func AnalysisServer() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /analysis", func(w http.ResponseWriter, r *http.Request) {
-		ReadStreamCorrectly()
+		external.ReadStreamCorrectly()
 	})
 
 	// If I had more time I would have implement a middleware or a custom server
@@ -17,6 +20,6 @@ func AnalysisServer() {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 	})
-	
+
 	http.ListenAndServe(":8080", mux)
 }

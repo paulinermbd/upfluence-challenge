@@ -1,50 +1,14 @@
-package internal
+// Package external implements clients or interfaces for external dependencies
+package external
 
 import (
 	"bufio"
-	"bytes"
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"time"
 )
-
-func ListenStream(body io.Reader) string {
-	fmt.Println("start")
-
-	client := http.Client{Timeout: 0 * time.Second}
-	req, err := http.NewRequest(http.MethodGet, "https://stream.upfluence.co/stream", body)
-	//resp, err := http.Get("https://stream.upfluence.co/stream")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}(resp.Body)
-
-	var buf bytes.Buffer
-	written, err := io.Copy(&buf, resp.Body)
-	if err != nil {
-		return ""
-	}
-	fmt.Println(written)
-	//jsonData := json.NewDecoder(resp.Body).Decode(&data)
-
-	fmt.Printf("%v", buf.String())
-
-	return "client"
-}
 
 func ReadStreamCorrectly() {
 	fmt.Println("start")

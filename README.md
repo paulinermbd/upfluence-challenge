@@ -1,67 +1,56 @@
 # Upfluence Challenge 🌟
 This is a technical challenge to join Upfluence company.
 
-## Description 
+## What?
+It's an REST API with only one route that allows user to get statistics from social media publication. Those statistics are based on a SSE sends an infinite stream of data from differents social media. 
+I tried to be pragmatic and Golang idiomatic. 
 
-(WIP) 
+## How?
 - net/http to build the route GET /analysis
 - testing for unit tests and test coverage 
-- golint et go fmt for code style and code quality 
-- archi hexa 
-  - facile à moduler
-  - si on veut ajouter plus de choses
-  - 
+- golint et go fmt for code style and code quality
 
-## What I need ? 
-- GET stats from a stream 
-  - Choose the duration of analysis that user wants => query params 
-  - Choose the stats that user wants => query params
+I comment the code as godoc. I add some logs to debug and knowing where errors happen. 
+
+## How to test?
+- Clone the repository 
+- Check requirements : Go is installed version 1.23
+- In a terminal run `go mod tidy` 
+- Go into `cmd` directory
+- In a terminal run `go run main.go` 
+- In Postman or terminal (new one) you can run : `curl "http://localhost:8080/analysis?duration=30s&dimension=likes"` 
+
+## Why, I did not achieve all the goals?
+I'm not very familiar with coding from scratch and I do not manipulate amount of data and streams in my every day life, so it was challenging to me. 
+I did not want to do complicate code because I want to be able to explain it. 
+I did not have time to test the 24h : 
+  - This is a really tricky case, we don't want the client to timeout so we will have to think to better solution like sending partials data or sending header telling explicitly to keep the connection open. 
+
+### Stream data
+Stream data was a discovery so I understood concepts and then start to implement buffer and scanner.
+Once I save my data I wanted to parse them and then do my maths asynchronously it's not the better option but as I'm not comfortable with channels I did not want to use it. 
+
+I would like more times to improve the data storage and not doing it all the 100 events for small duration like 5s. 
+
 
 ## API contract
 ### Route
-- GET localhost:8080/analysis => keep it simple at first but we could also think about versioning
+- GET localhost:8080/analysis
+  - Implement a server with net/http library
+  - If I had more time I would added middlewares and a router to be cleaner than just a handler 
 - Query params
   - duration (s, m, h)
-  - dimension (likes,comments,favorites,retweets) any of => cumulable ?
-    - Je comprends que c'est pas cumulable il ne parle que d'une dimension
+  - dimension (likes,comments,favorites,retweets)
 
 ### Response
-- JSON
+- JSON response, with an output object that I encode in JSON
 ````
 {
   "total_posts": int64,
   "minimum_timestamp": timestamp,
   "maximum_timestamp": timestamp,
-  "dimension_p50": int,
-  "dimension_p90": int,
-  "dimension_p99": int,
+  "p50": int,
+  "p90": int,
+  "p99": int,
 }
 ````
-- percentiles can be challenged following the efficiency of calculus
-- 
-  
-
-
-## Reasoning
-
-First, I read the instruction and then identify what I know and what I don't know.
-For things that I didn't know I looked quickly on the internet to understand concepts.
-
-On a second time, I will identify the features and find technical tasks associated to them.
-That will allow me to think about my architecture, and code organization. 
-
-Once my ideas are clear and tasks identified, I start to implement MVP. 
-
-The MVP objective is to connect to the SSE stream and read data for 5s. 
-
-Then I will try to optimize and do better to join the 10m, 24h or anytime that is longer than 5s. 
-
-## Notes 
-They said they like interface and abstract object during the interview => try to stick to it 
-Why 404  We could have send 405 (Method Not Allowed) => on another hand we could presume that is for safety because a 405 give a more precise info than a 404.
-
-## Questions 
-* 10min, 24h, we need to not timeout, how to deal with?
-  * Do they want partial content that refresh or once the time is passed all info computed? 
-
-

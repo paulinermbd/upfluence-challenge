@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -15,6 +16,10 @@ type StreamWriter struct {
 }
 
 func NewStreamWriter(filepath string) (*StreamWriter, error) {
+	if err := os.Remove(filepath); err != nil && !os.IsNotExist(err) {
+		return nil, fmt.Errorf("error removing old file: %w", err)
+	}
+
 	file, err := os.OpenFile(filepath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		return nil, fmt.Errorf("opening file error: %w", err)
@@ -51,8 +56,8 @@ func (sw *StreamWriter) Close() error {
 	return sw.file.Close()
 }
 
-func ReadStreamCorrectly() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+func ReadStreamCorrectly(duration time.Duration) error {
+	ctx, cancel := context.WithTimeout(context.Background(), duration)
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://stream.upfluence.co/stream", nil)
@@ -97,7 +102,9 @@ func ReadStreamCorrectly() error {
 			continue
 		}
 
-		if err := writer.WriteLine(line); err != nil {
+		processedLine, _ := strings.CutPrefix(line, "data: ")
+
+		if err := writer.WriteLine(processedLine); err != nil {
 			return fmt.Errorf("écriture ligne %d: %w", lineCount, err)
 		}
 

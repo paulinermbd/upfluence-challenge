@@ -1,8 +1,8 @@
-package internal
+package output
 
 import "time"
 
-type Response struct {
+type StatsResponse struct {
 	TotalPosts       int       `json:"total_posts"`
 	MaximumTimestamp time.Time `json:"maximum_timestamp"`
 	MinimumTimestamp time.Time `json:"minimum_timestamp"`

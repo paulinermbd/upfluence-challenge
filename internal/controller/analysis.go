@@ -18,7 +18,8 @@ func GetAnalysisHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, fmt.Sprintf("invalid duration given: %v", err), http.StatusBadRequest)
 	}
-	external.ReadStreamCorrectly(duration)
+
+	external.ReadStreamAndWriteData(duration)
 
 	dataFileReader := service.NewDataFileReader("events.jsonl")
 	data, err := dataFileReader.Read()
@@ -27,20 +28,18 @@ func GetAnalysisHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("Read %d data entries\n", len(data))
+	dimensions := dataFileReader.ExtractDimension(dimension, data)
 
-	likes := dataFileReader.ExtractDimension(dimension, data)
-
-	percentiles, err := service.ComputePercentiles(likes)
+	percentiles, err := service.ComputePercentiles(dimensions)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("error calculating percentiles: %v", err), http.StatusInternalServerError)
 		return
 	}
 
 	response := output.StatsResponse{
-		TotalPosts:       100,
-		MaximumTimestamp: data[0].Timestamp,
-		MinimumTimestamp: data[len(data)-1].Timestamp,
+		TotalPosts:       len(data),
+		MaximumTimestamp: data[0].Timestamp.Time,
+		MinimumTimestamp: data[len(data)-1].Timestamp.Time,
 		P50:              int64(percentiles[50]),
 		P90:              int64(percentiles[90]),
 		P99:              int64(percentiles[99]),

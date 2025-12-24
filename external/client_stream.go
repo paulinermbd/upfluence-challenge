@@ -56,7 +56,7 @@ func (sw *StreamWriter) Close() error {
 	return sw.file.Close()
 }
 
-func ReadStreamCorrectly(duration time.Duration) error {
+func ReadStreamAndWriteData(duration time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), duration)
 	defer cancel()
 
@@ -110,13 +110,11 @@ func ReadStreamCorrectly(duration time.Duration) error {
 
 		lineCount++
 
-		// TODO: be more granular to deal with tiny duration
 		// Flush every 100 events
 		if lineCount%100 == 0 {
 			if err := writer.Flush(); err != nil {
 				return fmt.Errorf("flush after %d lines: %w", lineCount, err)
 			}
-			fmt.Printf("Total of received events: %d\n", lineCount)
 		}
 	}
 

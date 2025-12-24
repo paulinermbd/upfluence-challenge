@@ -69,11 +69,13 @@ func (r *DataFileReader) parseFile(file *os.File) ([]model.ProcessedData, error)
 }
 
 func (r *DataFileReader) parseLine(line string, lineNumber int) (model.ProcessedData, error) {
-	var data model.ProcessedData
-	if err := json.Unmarshal([]byte(line), &data); err != nil {
+	var event model.EventData
+
+	if err := json.Unmarshal([]byte(line), &event); err != nil {
 		return model.ProcessedData{}, fmt.Errorf("erreur de parsing JSON à la ligne %d: %w", lineNumber, err)
 	}
-	return data, nil
+
+	return event.Data, nil
 }
 
 func (r *DataFileReader) ExtractDimension(dimensionType string, data []model.ProcessedData) []int {

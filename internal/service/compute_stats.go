@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"math"
 	"sort"
 )
 
@@ -29,24 +30,19 @@ func ComputePercentiles(data []int) (map[float64]int, error) {
 
 	results := make(map[float64]int, len(percentiles))
 	for _, p := range percentiles {
-		if p == 0 {
-			results[p] = sorted[0]
-			continue
-		}
-		if p == 100 {
-			results[p] = sorted[len(sorted)-1]
-			continue
-		}
+		// Méthode "nearest rank" : on arrondit vers le haut
+		rank := math.Ceil((p / 100.0) * float64(len(sorted)))
+		index := int(rank) - 1 // conversion en index (base 0)
 
-		index := (p / 100.0) * float64(len(sorted)-1)
-		roundedIndex := int(index + 0.5)
-
-		if roundedIndex >= len(sorted) {
-			results[p] = sorted[len(sorted)-1]
-			continue
+		// Protection contre les débordements
+		if index < 0 {
+			index = 0
+		}
+		if index >= len(sorted) {
+			index = len(sorted) - 1
 		}
 
-		results[p] = sorted[roundedIndex]
+		results[p] = sorted[index]
 	}
 
 	return results, nil

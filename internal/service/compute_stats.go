@@ -30,11 +30,11 @@ func ComputePercentiles(data []int) (map[float64]int, error) {
 
 	results := make(map[float64]int, len(percentiles))
 	for _, p := range percentiles {
-		// Méthode "nearest rank" : on arrondit vers le haut
+		// Nearest rank method as I work with int data this is acceptable
 		rank := math.Ceil((p / 100.0) * float64(len(sorted)))
 		index := int(rank) - 1 // conversion en index (base 0)
 
-		// Protection contre les débordements
+		// Protecting index out of bounds
 		if index < 0 {
 			index = 0
 		}

@@ -8,7 +8,7 @@ I tried to be pragmatic and Golang idiomatic.
 ## How?
 - net/http to build the route GET /analysis
 - testing for unit tests and test coverage 
-- golint et go fmt for code style and code quality
+- golint-ci et go fmt for code style and code quality
 
 I comment the code as godoc. I add some logs to debug and knowing where errors happen. 
 
@@ -31,6 +31,9 @@ Stream data was a discovery so I understood concepts and then start to implement
 Once I save my data I wanted to parse them and then do my maths asynchronously it's not the better option but as I'm not comfortable with channels I did not want to use it. 
 
 I would like more times to improve the data storage and not doing it all the 100 events for small duration like 5s. 
+
+I'm aware that my code it's not scalable to prod but not manage the concurrency and channeling is a big handicap in this case I think. The data parding took a lot of time as I'm used to work with libraries and frameworks. 
+Also the code could have a better architecture to follow a clean code philosophie, but I thought this could have been a loose of time so I did the bare minimum. 
 
 
 ## API contract

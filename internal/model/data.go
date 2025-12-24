@@ -42,7 +42,7 @@ func (e *EventData) UnmarshalJSON(data []byte) error {
 	}
 
 	for key, processedData := range raw {
-		processedData.Type = key // On injecte la clé dans la structure
+		processedData.Type = key // Inject key into the structure
 		e.Data = processedData
 	}
 
@@ -50,16 +50,13 @@ func (e *EventData) UnmarshalJSON(data []byte) error {
 }
 
 func (ct *CustomTime) UnmarshalJSON(b []byte) error {
-	// Enlever les guillemets si présents
 	s := strings.Trim(string(b), "\"")
 
-	// Si c'est vide ou null
 	if s == "null" || s == "" {
 		ct.Time = time.Time{}
 		return nil
 	}
 
-	// Parser le timestamp Unix
 	timestamp, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
 		return err
